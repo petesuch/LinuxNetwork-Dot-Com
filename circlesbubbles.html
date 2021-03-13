@@ -1,0 +1,85 @@
+<HTML>
+
+<!--
+*    "Circles and Bubbles"
+*   Uses SVG and Javascript to create expanding circles on mouseclicks.
+*   Random colors, random durations and random sizes are used to create the
+*   circles. This version has no random movement or changing colors.
+*
+*   @author: Peter Suchsland
+*   @date: October 28th, 2020
+*
+-->
+
+<head>
+<style type="text/css"></style>
+<title>Circles and Bubbles</title>
+</head>
+<body>
+<b>Click Anywhere!!!</b>
+<svg id="mySVG" width="100%" height="100%" style="background-color: darkslategray" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+
+<script type="text/javascript">
+
+  startAtMousePos = function(event) {
+    let offsetx = 7; // 7px offset to align mouse position with SVG coordinates
+    let offsety = 7; // Its often off slightly depending on window properties
+    let cx = (event.clientX) - offsetx;
+    let cy = (event.clientY) - offsety;
+    createCircle(cx, cy);   // create circle at cx,cy
+  }
+
+  decToHex = function (d, padding) { // convert any decimal number to hex with padding
+    let hex = Number(d).toString(16);
+    padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
+    while (hex.length < padding) {
+      hex = "0" + hex;
+    }
+    return hex;
+  };
+
+  randomColor = function() {
+    let decC = Math.floor(Math.random()*16777216);
+    let hex = decToHex(decC, 6);
+    return "#" + hex;
+  };
+  
+  getRandomInt = function(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); 
+  };
+  
+  randomTime = function(tlo,thi) {
+    let time = getRandomInt(tlo, thi);
+    return time+"s";
+  };
+
+  createCircle = function (cx, cy)  {
+    let myCircle = document.createElementNS(svgNS, "circle");
+    myCircle.setAttributeNS(null, "id", "mycircle");
+    myCircle.setAttributeNS(null, "cx", cx);
+    myCircle.setAttributeNS(null, "cy", cy);
+    myCircle.setAttributeNS(null, "r", 1);
+    myCircle.setAttributeNS(null, "fill", randomColor());
+    myCircle.setAttributeNS(null, "stroke", "yellow");
+    myCircle.setAttributeNS(null, "stroke-width", "3px");
+    // animation
+    let animateX = document.createElementNS(svgNS, "animate");
+    animateX.setAttributeNS(null, "attributeName", "r"); // radius is animated
+    animateX.setAttributeNS(null, "from", "0");
+    animateX.setAttributeNS(null, "to", Math.random()*170 );
+    animateX.setAttributeNS(null, "dur", randomTime(8,40) );
+    animateX.setAttributeNS(null, "repeatCount", "indefinite");
+    
+    myCircle.appendChild(animateX);
+    document.getElementById("mySVG").appendChild(myCircle);
+  };
+
+  let svgNS = "http://www.w3.org/2000/svg";
+  document.addEventListener("click", startAtMousePos);
+  
+  
+</script>
+</body>
+</HTML>

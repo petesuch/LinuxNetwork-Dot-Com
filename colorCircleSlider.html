@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html>
+    
+<style>
+h1 { color:#182024;
+    font-family:Helvetica;
+    text-decoration: underline;
+
+}
+p {
+    color:#FC3806;
+    font-family:Consolas;
+    font-size:200%;
+}
+p span {
+    background-color:#F5FCFA; 
+}
+img {
+   padding-bottom: 10px;
+}        
+</style>
+
+<body style="background-color:#F6EBDF">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible">
+        <title>SVG JavaScript Circles and Colors</title>
+        <meta name="description" content="An interactive demo.">
+    </head>
+<h1>SVG Circles and JavaScript</h1>
+<h2>An Example of Passing Values from Javascript to SVG to Create Dynamic Circles with the use of Sliders</h2>
+
+    
+<img align="right"  src="SVG_JS_pic.png">
+<br>
+
+<div>
+  <label for="slider-fill">Background Color</label>:
+  <input id="slider-fill" type="range" min="0" max="16777215" value="13139677" oninput="moveSlider1(this, 'fill')"/>
+</div>
+    
+  <p></p>
+  
+<div>
+  <label for="slider-x">X Circle 1</label>:
+  <input id="slider-x" type="range" min="1" max="60" value="30" oninput="moveSlider2(this, 'x')"/>
+</div>
+<div>
+  <label for="slider-y">Y Circle 1</label>:
+  <input id="slider-y" type="range" min="1" max="30" value="20" oninput="moveSlider2(this, 'y')"/>
+</div>
+<div>
+  <label for="slider-r">R Circle 1</label>:
+  <input id="slider-r" type="range" min="1" max="200" value="20" oninput="moveSlider2(this, 'r')"/>
+</div>
+<div>
+  <label for="slider-fill">Color Circle 1</label>:
+  <input id="slider-fill" type="range" min="0" max="16777215" value="99999" oninput="moveSlider2(this, 'fill')"/>
+</div>
+  <p></p>
+  
+    
+<div>
+  <label for="slider-x">X Circle 2</label>:
+  <input id="slider-x" type="range" min="1" max="60" value="30" oninput="moveSlider3(this, 'x')"/>
+</div>
+<div>
+  <label for="slider-y">Y Circle 2</label>:
+  <input id="slider-y" type="range" min="1" max="30" value="20" oninput="moveSlider3(this, 'y')"/>
+</div>
+<div>
+  <label for="slider-r">R Circle 2</label>:
+  <input id="slider-r" type="range" min="1" max="200" value="20" oninput="moveSlider3(this, 'r')"/>
+</div>
+<div>
+  <label for="slider-fill">Color Circle 2</label>:
+  <input id="slider-fill" type="range" min="0" max="16777215" value="99999" oninput="moveSlider3(this, 'fill')"/>
+</div>
+ 
+<br>    
+<svg viewBox="0 0 300 150">
+    <rect id="target1" width="300" height="150" fill="#ECBE4C"/>
+    <circle id="target2" cx="70" cy="40" r="35" fill="#A0657E" />
+    <circle id="target3" cx="170" cy="50" r="55" fill="#8365F2" />
+</svg>
+
+<script type="text/javascript">
+    
+    // @author: Peter Suchsland
+    // @date: Oct 25, 2020
+    //
+    function decToHex(d, padding) {
+        var hex = Number(d).toString(16);
+        padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
+        while (hex.length < padding) { hex = "0" + hex; }
+        return hex;
+    }
+    function rgb2hex(r,g,b) { // to be implemented later
+        if (g !== undefined)
+            return Number(0x1000000 + r*0x10000 + g*0x100 + b).toString(16).substring(1);
+        else
+            return Number(0x1000000 + r[0]*0x10000 + r[1]*0x100 + r[2]).toString(16).substring(1);
+    }
+    
+    let moveSlider1 = function(slider, sliderParam) {
+        let value = slider.value;
+        let rect = document.getElementById("target1");
+
+        console.log("(slider, sliderParam): ( "  + slider + ", " + sliderParam + " )" ) ;
+        console.log(rect);
+
+        if (sliderParam == "fill" ) { 
+            rect.setAttributeNS(null, "fill", "#"+decToHex(value,6) );
+            console.log("value: " + value);
+            console.log("Hex: " + decToHex(value,6));
+        }
+    }
+    
+    
+    let moveSlider2 = function(slider, sliderParam) {
+        let value = slider.value;
+        let circle1 = document.getElementById("target2");
+
+        console.log("(slider, sliderParam): ( "  + slider + ", " + sliderParam + " )" ) ;
+        console.log(circle1);
+
+        if (sliderParam == "x" || sliderParam == "y" ) {
+            circle1.setAttributeNS(null, "c" + sliderParam, value * 5 );
+        }
+        if (sliderParam == "r" ) {
+            circle1.setAttributeNS(null, "r", value );
+        }
+        if (sliderParam == "fill" ) { 
+            circle1.setAttributeNS(null, "fill", "#"+decToHex(value,6) );
+            console.log("value: " + value);
+            console.log("Hex: " + decToHex(value,6));
+        }
+    }
+    
+        let moveSlider3 = function(slider, sliderParam) {
+        let value = slider.value;
+        let circle2 = document.getElementById("target3");
+
+        console.log("(slider, sliderParam): ( "  + slider + ", " + sliderParam + " )" ) ;
+        console.log(circle2);
+
+        if (sliderParam == "x" || sliderParam == "y" ) {
+            circle2.setAttributeNS(null, "c" + sliderParam, value * 5 );
+        }
+        if (sliderParam == "r" ) {
+            circle2.setAttributeNS(null, "r", value );
+        }
+        if (sliderParam == "fill" ) { 
+            circle2.setAttributeNS(null, "fill", "#"+decToHex(value,6) );
+            console.log("value: " + value);
+            console.log("Hex: " + decToHex(value,6));
+        }
+    }
+    
+</script>
+
+</html>

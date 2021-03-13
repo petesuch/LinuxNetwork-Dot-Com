@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<!--
+Early Testing for "Raindrops on a Pond"...
+
+First goal: Create an expanding circle. The rate can be changed.
+Second goal: Create a never ending loop of points expanding into larger and larger
+circles from the same entry point on the pond.   Expanding circles of alternating 
+colors get created.  Once that's done do another point source and another and another.  
+Slowly change the colors over time.  Perhaps have some point sources with differing frequencies of 
+creation and differing expansion rates. 
+The project is complete when the user can pick with the mouse where the point sources are.
+The user can adjust sliders that govern rate of expansion and frequencies.
+The user can make some adjustments to color schemes.  Perhaps it can be used as 
+a screensaver.  
+
+Hopefully JS and SVG is enough.
+-->
+<html>
+    <head>
+        <title>Rain Drops on Pond</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>TODO: can I create circles on the fly?</div>
+
+           
+    <svg viewBox="0 0 300 100">
+        <rect id="pond" width="300" height="150" fill="#ECBE4C" />
+        <circle id="entry1" cx="80" cy="40" r="1" fill="#A0657E" stroke="gray" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.5" />
+        <circle id="entry2" cx="110" cy="90" r="1" fill="#8365F2" stroke="red" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.6" />
+        <circle id="entry3" cx="80" cy="40" r="1" fill="#A0666E" stroke="orange" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.6" />
+        <circle id="entry4" cx="110" cy="90" r="1" fill="#8365F2" stroke="yellow" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.5" />
+        <circle id="entry5" cx="80" cy="40" r="1" fill="#A0657E" stroke="green" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.4" />
+        <circle id="entry6" cx="110" cy="90" r="1" fill="#8365F2" stroke="blue" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.5" />
+        <circle id="entry7" cx="80" cy="40" r="1" fill="#A0666E" stroke="violet" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.4" />
+        <circle id="entry8" cx="110" cy="90" r="1" fill="#8365F2" stroke="white" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.3" />
+        
+        <circle id="entry9" cx="80" cy="40" r="1" fill="#A0657E" stroke="gray" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.5" />
+        <circle id="entry10" cx="110" cy="90" r="1" fill="#8399F2" stroke="red" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.6" />
+        <circle id="entry11" cx="80" cy="40" r="1" fill="#A0657E" stroke="orange" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.6" />
+
+        <circle id="entry12" cx="110" cy="90" r="1" fill="#8365F2" stroke="red" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.6" />
+        <circle id="entry13" cx="80" cy="40" r="1" fill="#A0657E" stroke="orange" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.6" />
+        
+        
+        <circle id="entry14" cx="110" cy="90" r="1" fill="#8365F2" stroke="yellow" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.5" />
+        <circle id="entry15" cx="80" cy="40" r="1" fill="#A0667E" stroke="green" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.4" />
+        <circle id="entry16" cx="110" cy="90" r="1" fill="#8333F2" stroke="blue" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.5" />
+        <circle id="entry17" cx="80" cy="40" r="1" fill="#A0657E" stroke="violet" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.4" />
+        <circle id="entry18" cx="110" cy="40" r="1" fill="#8311F2" stroke="white" stroke-width="3" stroke-opacity="0.5" fill-opacity="0.3" />
+    </svg> 
+    
+    
+    <script>
+        
+    function uniqueInteger() { 
+        return uniqueInteger.counter++; // Return and increment counter property
+    }   
+    uniqueInteger.counter =0; 
+
+    let lifeCycleWave = function(value,entry) {
+            let circle = document.getElementById(entry);
+            circle.setAttributeNS(null, "r", value);
+    };
+
+    
+    function timedMsg() {
+              let t1=setInterval(  'lifeCycleWave(uniqueInteger()/10+0.4,"entry1")' ,100);
+              let t2=setInterval(  'lifeCycleWave(uniqueInteger()/11+0.4,"entry2")' ,100);
+              let t3=setInterval(  'lifeCycleWave(uniqueInteger()/12+0.3,"entry3")' ,100);
+              let t4=setInterval(  'lifeCycleWave(uniqueInteger()/13+0.3,"entry4")' ,100);
+              let t5=setInterval(  'lifeCycleWave(uniqueInteger()/15+0.2,"entry5")' ,100);
+              let t6=setInterval(  'lifeCycleWave(uniqueInteger()/16+0.2,"entry6")' ,100);
+              let t7=setInterval(  'lifeCycleWave(uniqueInteger()/17+0.1,"entry7")' ,100);
+              let t8=setInterval(  'lifeCycleWave(uniqueInteger()/18+0.1,"entry8")' ,100);
+              let t9=setInterval(  'lifeCycleWave(uniqueInteger()/19+0.4,"entry9")' ,100);
+              
+              let t10=setInterval(  'lifeCycleWave(uniqueInteger()/24+0.,"entry10")' ,100);
+              let t11=setInterval(  'lifeCycleWave(uniqueInteger()/21+0.4,"entry11")' ,100);
+              let t12=setInterval(  'lifeCycleWave(uniqueInteger()/22+0.4,"entry12")' ,100);
+              let t13=setInterval(  'lifeCycleWave(uniqueInteger()/23+0.3,"entry13")' ,100);
+              let t14=setInterval(  'lifeCycleWave(uniqueInteger()/24+0.3,"entry14")' ,100);
+              let t15=setInterval(  'lifeCycleWave(uniqueInteger()/25+0.2,"entry15")' ,100);
+              let t16=setInterval(  'lifeCycleWave(uniqueInteger()/26+0.2,"entry16")' ,100);
+              let t17=setInterval(  'lifeCycleWave(uniqueInteger()/27+0.1,"entry17")' ,100);
+              let t18=setInterval(  'lifeCycleWave(uniqueInteger()/28+0.1,"entry18")' ,100);
+
+    }
+ 
+    timedMsg(); 
+
+        
+    </script>
+    </body>
+</html>
