@@ -5,7 +5,7 @@
   <path d="M 0 0 h 40 v 40 h -40 z" style="stroke: gold; fill: #5C84B9;" />
 
   <!--  'M 0 0 Q 11 20 10 1 T 20 20; M 0 10 Q 30 20 10 1 T 20 20; M 0 0 Q 11 20 10 1 T 20 20' -->
-  <!--      values  ='M 0 0 Q 11 20 10 1 T 20 20; M 0 0 Q 30 20 10 1 T 20 20; M 0 0 Q 11 20 10 1 T 20 20'  -->
+  <!--   values  ='M 0 0 Q 11 20 10 1 T 20 20; M 0 0 Q 30 20 10 1 T 20 20; M 0 0 Q 11 20 10 1 T 20 20'  -->
 
   <path
     style="fill:none;stroke-width: 2px;" >
