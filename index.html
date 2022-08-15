@@ -3,7 +3,8 @@
 
 <head>
   <title>LinuxNetwork</title>
-
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
   <meta name="description"
     content="This Site is dedicated to the learner of all ages. With emphasis on open source and the Linux operating system, we hope to encourage noobs with simple examples of programming. By right clicking any page you can look at the source code written in HTML and JavaScript. We have plans to further develop this website with articles and instructions on building a Linux System or simply using a common distro for everyday tasks.">
@@ -30,16 +31,17 @@
     }
 
     .headerImage {
+      float: right;
       padding-top: 0x;
-      padding-right: 9px;
+      padding-right: 50px;
       padding-left: 10px;
-      padding-bottom: 10px;
+      padding-bottom: 0px;
     }
 
-    h3 {
-      padding-top: 30px;
-      padding-left: 140px;
-      padding-right: 100px;
+    .outside-links {
+      padding-top: 10px;
+      padding-left: 50px;
+      padding-right: 10px;
       padding-bottom: 10px;
     }
 
@@ -66,18 +68,16 @@
   <div class="header">
     <img class="headerImage" src="penguinsSmall.png" />
     <h1>LinuxNetwork.com</h1>
-    <p>Explore. Have Fun. Learn with Linux!</p>
+    <p>Explore. Have fun.</p>
+    <p>Learn with Linux</p>
   </div>
 
-
-  <h3><a href="passwordMaker.html" target="_blank">Easily Make your own Passwords with the Password Generator</a></h3>
-
-  <h3><a href="circlesbubbles.html" target="_blank">Soothing!! Make Random Expanding Circles. Calming! Rain drops on a pond</a></h3>
-
-  <h3><a href="colorCircleSlider.html" target="_blank">Color Circle Slider Demo</a></h3>
-
-  <h3><a href="https://www.w3schools.com/html/html_images.asp" target="_blank">A great reference</a></h3>
-
+  <div class="outside-links">
+    <h3><a href="passwordMaker.html" target="_blank">Password Generator...Make your own Passwords</a></h3>
+    <h3><a href="circlesbubbles.html" target="_blank">Expanding Circle Game</a></h3>
+    <h3><a href="colorCircleSlider.html" target="_blank">Color Slider Demo</a></h3>
+    <h3><a href="https://www.w3schools.com/html/html_images.asp" target="_blank">W3 Schools A great reference</a></h3>
+  </div>
 
   <script src="timeLoop.js"></script>
 
