@@ -1,19 +1,36 @@
-<svg id="mySVG" width="200px" height="200px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg  id="mySVG" width="200px" height="200px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
 
-  <defs>
-    <pattern id="tile" x="0" y="0" width="20%" height="20%" patternUnits="objectBoundingBox">
-      <path d="M 0 0 h 40 v 40 h -40 z" style="stroke: gold; fill: #5C84B9;"/>
+<defs>
+  <pattern id="tile" x="0" y="0" width="20%" height="20%" patternUnits="objectBoundingBox">
+  <path d="M 0 0 h 40 v 40 h -40 z" style="stroke: gold; fill: #5C84B9;" />
 
-      <!-- 'M 0 0 Q 11 20 10 1 T 20 20; M 0 10 Q 30 20 10 1 T 20 20; M 0 0 Q 11 20 10 1 T 20 20' -->
-      <!-- values ='M 0 0 Q 11 20 10 1 T 20 20; M 0 0 Q 30 20 10 1 T 20 20; M 0 0 Q 11 20 10 1 T 20 20' -->
+  <!--  'M 0 0 Q 11 20 10 1 T 20 20; M 0 10 Q 30 20 10 1 T 20 20; M 0 0 Q 11 20 10 1 T 20 20' -->
+  <!--   values  ='M 0 0 Q 11 20 10 1 T 20 20; M 0 0 Q 30 20 10 1 T 20 20; M 0 0 Q 11 20 10 1 T 20 20'  -->
 
-      <path style="fill:none;stroke-width: 2px;">
-        <animate attributeName="d" attributeType="XML" values='M 0 0 Q 10 20 10 2 T 40 40;   M 0 40 Q 40 0 0 50 T 40 10;   M 0 0 Q 10 20 10 2 T 40 40' begin="0s" dur="15s" repeatCount="indefinite" animation-direction="alternate"/>
-        <animate attributeName="stroke" attributeType="XML" values='#BC011D;gold;black' begin="0s" dur="30s" repeatCount="indefinite" animation-direction="alternate"/>
-      </path>
+  <path
+    style="fill:none;stroke-width: 2px;" >
+      <animate
+        attributeName="d"
+        attributeType="XML"
+        values  ='M 0 0 Q 10 20 10 2 T 40 40;   M 0 40 Q 40 0 0 50 T 40 10;   M 0 0 Q 10 20 10 2 T 40 40'
+        begin="0s"
+        dur="15s"
+        repeatCount="indefinite"
+        animation-direction="alternate"
+      />
+      <animate
+        attributeName="stroke"
+        attributeType="XML"
+        values='#BC011D;gold;black'
+        begin="0s"
+        dur="30s"
+        repeatCount="indefinite"
+        animation-direction="alternate"
+      />
+  </path>
 
-    </pattern>
-  </defs>
+  </pattern>
+</defs>
 
-  <rect x="0" y="0" width="200" height="200" style="fill: url(#tile); stroke: black;"/>
+<rect x="0" y="0" width="200" height="200" style="fill:url(#tile); stroke:black;"/>
 </svg>
