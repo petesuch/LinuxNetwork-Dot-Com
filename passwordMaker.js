@@ -82,8 +82,7 @@ let pwg = function (x) {
                 break;
         }
     }
-    console.log(finalPW);
-
+    // console.log(finalPW);
     return finalPW;
 }
 
