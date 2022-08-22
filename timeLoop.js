@@ -74,17 +74,17 @@ mkLongOptions = function(tz=string, hr12=boolean) {
   options.timeZone = tz;
   options.hours12 = hr12;
   return options;
-}
+};
 
 
 function changeTime() {
   let t=setInterval("getFullDateAndTime();", 1000); // every second
-}
+};
 
 
 function getFullDateAndTime() {
   //let pat =  ;
-  let pat = /\b\d\b/ ;
+  let pat = /\b\d\d\b/ ;
   let dnow = new Date();
   for (airportCode in tzMap ) {
     dateTimeFormat = new Intl.DateTimeFormat('en-US', mkLongOptions(tzMap[airportCode], true));
@@ -92,7 +92,7 @@ function getFullDateAndTime() {
     let day = Number(d.match(pat));
     d = d.replace(pat,anyNumberSuffix(day)); // turn 18 into 18th
     document.getElementById(airportCode).innerHTML =  airportCode + ":  "+ d;
-  };
-}
+  }
+};
 
 changeTime();

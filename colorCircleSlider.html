@@ -14,7 +14,7 @@
       padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
       while (hex.length < padding) {
         hex = "0" + hex;
-      }
+      };
       return hex;
     };
 
@@ -86,54 +86,82 @@
 
   <h1>SVG Circles and JavaScript</h1>
   <h2>An Example of Passing Values from Javascript to SVG to Create Dynamic Circles with the use of Sliders</h2>
-  <img align="right" src="SVG_JS_pic.png">
+  <!-- img align="right" src="SVG_JS_pic.png" -->
   <br>
 
+  <table border="1">
+    <tr>
+      <td>
+        <div>
+          <label for="slider-x">Horizontal placement of Circle 1</label>:
+          <input id="slider-x" type="range" min="1" max="60" value="30" oninput="changeCircle_1(this, 'x')" />
+        </div>
+     </td>
+
+      <td>
+        <div>
+          <label for="slider-x">Horizontal placement of Circle 2</label>:
+          <input id="slider-x" type="range" min="1" max="60" value="30" oninput="changeCircle_2(this, 'x')" />
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div>
+          <label for="slider-y">Vertical placement of Circle 1</label>:
+          <input id="slider-y" type="range" min="1" max="30" value="20" oninput="changeCircle_1(this, 'y')" />
+        </div>
+      </td>
+
+      <td>
+        <div>
+          <label for="slider-y">Vertical placement of Circle 2</label>:
+          <input id="slider-y" type="range" min="1" max="30" value="20" oninput="changeCircle_2(this, 'y')" />
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div>
+          <label for="slider-fill">The Color of Circle 1</label>:
+          <input id="slider-fill" type="range" min="0" max="16777215" value="99999" oninput="changeCircle_1(this, 'fill')" />
+        </div>
+      </td>
+
+      <td>
+        <div>
+          <label for="slider-fill">The Color of Circle 2</label>:
+          <input id="slider-fill" type="range" min="0" max="16777215" value="99999" oninput="changeCircle_2(this, 'fill')" />
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div>
+          <label for="slider-r">The Radius of Circle 1</label>:
+          <input id="slider-r" type="range" min="1" max="200" value="20" oninput="changeCircle_1(this, 'r')" />
+        </div>
+      </td>
+
+      <td>
+        <div>
+          <label for="slider-r">The Radius of Circle 2</label>:
+          <input id="slider-r" type="range" min="1" max="200" value="20" oninput="changeCircle_2(this, 'r')" />
+        </div>
+      </td>
+    </tr>
+
+  </table>
+
   <div>
-    <label for="slider-fill">Background Color below </label>:
+    <label for="slider-fill">Background Color below</label>:
     <input id="slider-fill" type="range" min="0" max="16777215" value="13139677"
       oninput="backgroundSlider(this, 'fill')" />
   </div>
 
-  <br>
-
-  <div>
-    <label for="slider-x">Horizontal placement of Circle 1</label>:
-    <input id="slider-x" type="range" min="1" max="60" value="30" oninput="changeCircle_1(this, 'x')" />
-  </div>
-  <div>
-    <label for="slider-y">Vertical placement of Circle 1</label>:
-    <input id="slider-y" type="range" min="1" max="30" value="20" oninput="changeCircle_1(this, 'y')" />
-  </div>
-  <div>
-    <label for="slider-r">The Radius of Circle 1</label>:
-    <input id="slider-r" type="range" min="1" max="200" value="20" oninput="changeCircle_1(this, 'r')" />
-  </div>
-  <div>
-    <label for="slider-fill">The Color of Circle 1</label>:
-    <input id="slider-fill" type="range" min="0" max="16777215" value="99999" oninput="changeCircle_1(this, 'fill')" />
-  </div>
-
-  <br>
-
-  <div>
-    <label for="slider-x">Horizontal placement of Circle 2</label>:
-    <input id="slider-x" type="range" min="1" max="60" value="30" oninput="changeCircle_2(this, 'x')" />
-  </div>
-  <div>
-    <label for="slider-y">Vertical placement of Circle 2</label>:
-    <input id="slider-y" type="range" min="1" max="30" value="20" oninput="changeCircle_2(this, 'y')" />
-  </div>
-  <div>
-    <label for="slider-r">The Radius of Circle 2</label>:
-    <input id="slider-r" type="range" min="1" max="200" value="20" oninput="changeCircle_2(this, 'r')" />
-  </div>
-  <div>
-    <label for="slider-fill">The Color of Circle 2</label>:
-    <input id="slider-fill" type="range" min="0" max="16777215" value="99999" oninput="changeCircle_2(this, 'fill')" />
-  </div>
-
-  <br>
 
   <svg viewBox="0 0 300 150">
     <rect id="target1" width="300" height="150" fill="#ECBE4C" />
