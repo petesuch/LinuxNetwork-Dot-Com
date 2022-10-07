@@ -84,16 +84,16 @@ function changeTime() {
 
 function getFullDateAndTime() {
   let pat = new RegExp('\\b\\d\\b') ;
-  let dnow = new Date();
+  let dateNow = new Date();
   for (airportCode in tzMap ) {
     dateTimeFormat = new Intl.DateTimeFormat('en-US', mkLongOptions(tzMap[airportCode], true));
-    let d = dateTimeFormat.format(dnow); // apply formatting using options
-    console.log("d:", d)
-    let day = Number(d.match(pat));
+    let dtf = dateTimeFormat.format(dateNow); // apply formatting using options
+    console.log("dtf:", dtf)
+    let day = Number(dtf.match(pat));
     console.log("day:", day)
-    d = d.replace(pat,anyNumberSuffix(day)); // turn 18 into 18th
-    console.log("d:", d)
-    document.getElementById(airportCode).innerHTML =  airportCode + ":  "+ d;
+    dtf = dtf.replace(pat,anyNumberSuffix(day)); // turn 18 into 18th
+    console.log("dtf:", dtf)
+    document.getElementById(airportCode).innerHTML =  airportCode + ":  "+ dtf;
   }
 };
 
