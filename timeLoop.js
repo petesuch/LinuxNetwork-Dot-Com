@@ -40,7 +40,7 @@ anyNumberSuffix = function (n) {
       lastDigit = last2Digits.groups.lastDigit;
     }
   } catch (err) {
-  // console.log("Error: "+ err);
+    // console.log("Error: "+ err);
   }
   if (secondtoLast === '1') {
     suffix = 'th';
@@ -64,13 +64,13 @@ anyNumberSuffix = function (n) {
         break
     }
   }
-  return num+suffix;
+  return num + suffix;
 };
 
 
+// return map of options that include timeZone and hour12
 mkLongOptions = function(tz=string, hr12=boolean) {
-  // return map of options that include timeZone and hour12
-  let options = {weekday:'long', year: 'numeric',month: 'long',day: 'numeric', hour: 'numeric',minute: 'numeric',second: 'numeric'};
+  let options = {weekday:'long', year:'numeric', month:'long',day:'numeric', hour:'numeric', minute:'numeric', second:'numeric'};
   options.timeZone = tz;
   options.hours12 = hr12;
   return options;
@@ -83,17 +83,14 @@ function changeTime() {
 
 
 function getFullDateAndTime() {
-  let pat = new RegExp('\\b\\d+\\b', 's') ;
-  let dateNow = new Date();
+  //let pattern = /\b\d+,\ /;
+  let dnow = new Date();
   for (airportCode in tzMap ) {
     dateTimeFormat = new Intl.DateTimeFormat('en-US', mkLongOptions(tzMap[airportCode], true));
-    let dtf = dateTimeFormat.format(dateNow); // apply formatting using options
-    console.log("dtf:", dtf)
-    let day = Number(dtf.match(pat));
-    console.log("day:", day)
-    dtf = dtf.replace(pat,anyNumberSuffix(day)); // turn 18 into 18th
-    console.log("dtf:", dtf)
-    document.getElementById(airportCode).innerHTML =  airportCode + ":  "+ dtf;
+    let dtf = dateTimeFormat.format(dnow); // apply formatting using options
+    //let day = Number(d.match(pattern));
+    //dtf = dtf.replace(pattern,anyNumberSuffix(day)); // turn 18 into 18th
+    document.getElementById(airportCode).innerHTML =  airportCode + ":  " + dtf;
   }
 };
 
