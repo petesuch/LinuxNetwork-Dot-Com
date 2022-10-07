@@ -64,7 +64,7 @@ anyNumberSuffix = function (n) {
         break
     }
   }
-  return num + suffix;
+  return num+suffix;
 };
 
 
@@ -83,8 +83,7 @@ function changeTime() {
 
 
 function getFullDateAndTime() {
-  //let pat =  ;
-  let pat = /\b\d\b/ ;
+  let pat = /\b\d\b/m ;
   let dnow = new Date();
   for (airportCode in tzMap ) {
     dateTimeFormat = new Intl.DateTimeFormat('en-US', mkLongOptions(tzMap[airportCode], true));
