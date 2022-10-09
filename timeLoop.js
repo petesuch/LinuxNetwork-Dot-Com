@@ -1,6 +1,7 @@
+// timeLoop.js
 let tzMap = {
-  "PHX":"America/Phoenix",
   "JFK":"America/New_York",
+  "PHX":"America/Phoenix",
   "PNH":"Asia/Phnom_Penh",
   "LAX":"America/Los_Angeles",
   "DEN":"America/Denver",
@@ -22,27 +23,27 @@ let tzMap = {
   "ICN":"Asia/Seoul",
 };
 
-
 anyNumberSuffix = function (n) {
-  if (typeof (n) === 'string' || n < 0) {
-    return n;
+  if (typeof(n) === 'string') {
+	  n=Number(n);
   }
-  let suffix = '';
-  let num = '';
-  let secondtoLast;
-  let lastDigit;
-  let last2Digits;
-  try {
-    if (n !== undefined) {
-      num = Math.floor(n);
-      last2Digits = num.toString().match(/(?<secondtoLastDigit>\d?)(?<lastDigit>\d\b)/);
-      secondtoLast = last2Digits.groups.secondtoLastDigit;
-      lastDigit = last2Digits.groups.lastDigit;
-    }
-  } catch (err) {
-    // console.log("Error: "+ err);
+  let suffix='';
+  let num='';
+  let secondtoLast='';
+  let lastDigit='';
+  let last2Digits='';
+
+  if (n  > 9 ) {
+    num = n;
+    last2Digits = num.toString().match(/(?<secondtoLastDigit>\d)(?<lastDigit>\d\b)/);
+    secondtoLast = last2Digits.groups.secondtoLastDigit;
+    lastDigit = last2Digits.groups.lastDigit;
   }
-  if (secondtoLast === '1') {
+	if (n <= 9 ) {
+		num = n;
+		lastDigit = String(num);
+	}
+  if (secondtoLast == '1') {
     suffix = 'th';
   }
   else {
@@ -64,34 +65,42 @@ anyNumberSuffix = function (n) {
         break
     }
   }
-  return num + suffix;
+  return num+suffix+', ';
 };
 
 
-// return map of options that include timeZone and hour12
+//  Map of options that include timeZone and a 12 hour clock
 mkLongOptions = function(tz=string, hr12=boolean) {
-  let options = {weekday:'long', year:'numeric', month:'long',day:'numeric', hour:'numeric', minute:'numeric', second:'numeric'};
+  let options = {weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'numeric', second:'numeric'};
   options.timeZone = tz;
   options.hours12 = hr12;
   return options;
 };
 
 
-function changeTime() {
-  let t=setInterval("getFullDateAndTime();", 1000); // every second
+//  A function to keep the seconds and minutes up and running
+function clockIsTicking() {
+  let ticktok=setInterval("getFullDateAndTime();", 1000); // every second
 };
 
 
+//  Gets date/time, applies timezone and finally exports to DOM
 function getFullDateAndTime() {
-  //let pattern = /\b\d+,\ /;
-  let dnow = new Date();
-  for (airportCode in tzMap ) {
-    dateTimeFormat = new Intl.DateTimeFormat('en-US', mkLongOptions(tzMap[airportCode], true));
-    let dtf = dateTimeFormat.format(dnow); // apply formatting using options
-    //let day = Number(d.match(pattern));
-    //dtf = dtf.replace(pattern,anyNumberSuffix(day)); // turn 18 into 18th
-    document.getElementById(airportCode).innerHTML =  airportCode + ":  " + dtf;
-  }
+	const regex = new RegExp('\\b(?<grpDay>\\d+),\\ ', 's');
+	//const regex = /\b(?<grpDay>\d+)\ /s);
+	let dnow = new Date();
+	for (airportCode in tzMap ) {
+		intlDateTimeFormat = new Intl.DateTimeFormat('en-US', mkLongOptions(tzMap[airportCode], true));
+		let idtf = intlDateTimeFormat.format(dnow); // Apply formatting options
+		let idtf_str = String(idtf);  // turn the International Date Time into string
+		let grpDay = idtf_str.match(regex);
+		idtf_str = idtf_str.replace(regex, anyNumberSuffix(grpDay[1])); // turn 18 into 18th, etc
+		//console.log("last idtf_str:", idtf_str);
+		document.getElementById(airportCode).innerHTML =  airportCode + ":  " + idtf_str;
+	}
 };
 
-changeTime();
+//  It takes a licking but keeps on ticking
+clockIsTicking();
+
+// End of File

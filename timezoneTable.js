@@ -1,7 +1,7 @@
 // timezoneTable.js
 
 function timedMsg() {
-    var t=setInterval("change_time();",1000);
+    var t=setInterval("change_time();", 1000);
 }
 
 function change_time() {
@@ -61,4 +61,7 @@ function change_time() {
     document.getElementById("dme_time").innerHTML = "Moscow:  "+ d19;
     document.getElementById("hnl_time").innerHTML = "Honolulu: "+ d20;
 }
+
 timedMsg();
+
+// End of File
