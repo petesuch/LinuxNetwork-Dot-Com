@@ -1,4 +1,3 @@
-// timeLoop.js
 let tzMap = {
   "JFK":"America/New_York",
   "PHX":"America/Phoenix",
