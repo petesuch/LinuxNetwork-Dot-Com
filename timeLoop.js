@@ -2,7 +2,7 @@ let tzMap = {
   "JFK": "America/New_York",
   "PHX": "America/Phoenix",
   "PNH": "Asia/Phnom_Penh",
-  "LAX": "America/Los_Angeles",
+  "SFO": "America/San_Francisco",
   "DEN": "America/Denver",
   "NRT": "Asia/Tokyo",
   "MEL": "Australia/Melbourne",
