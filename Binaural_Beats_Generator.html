@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Binaural Beat Generator</title>
+<style>
+  :root {
+    --bg: #12141a;
+    --panel: #1c1f28;
+    --accent: #7fb8ff;
+    --accent2: #ff9d7f;
+    --text: #e8eaf0;
+    --muted: #8a8fa3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 20%, #1a1e2a 0%, var(--bg) 70%);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text);
+  }
+  .card {
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 32px 36px 28px;
+    width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    border: 1px solid #2a2e3a;
+  }
+  h1 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: 0.02em;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 26px;
+  }
+  .control {
+    margin-bottom: 22px;
+  }
+  .control label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .control label span.val {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  input[type=range] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: #333844;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 0 4px rgba(127,184,255,0.15);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border: none;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+  #beatSlider::-webkit-slider-thumb { background: var(--accent2); box-shadow: 0 0 0 4px rgba(255,157,127,0.15); }
+  #beatSlider::-moz-range-thumb { background: var(--accent2); }
+  #noiseSlider::-webkit-slider-thumb { background: #9a8b6f; box-shadow: 0 0 0 4px rgba(154,139,111,0.15); }
+  #noiseSlider::-moz-range-thumb { background: #9a8b6f; }
+
+  .readout {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #565c6e;
+    margin-top: 4px;
+  }
+  button#toggle {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #0c1118;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.15s;
+  }
+  button#toggle:hover { opacity: 0.9; }
+  button#toggle.playing { background: var(--accent2); }
+  .warning {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 16px;
+    line-height: 1.5;
+  }
+  .ear-tags {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #565c6e;
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Binaural Beat Generator</h1>
+  <div class="sub">Requires stereo headphones</div>
+
+  <div class="control">
+    <label>Base frequency <span class="val" id="baseVal">200 Hz</span></label>
+    <input type="range" id="baseSlider" min="50" max="500" step="1" value="200">
+  </div>
+
+  <div class="control">
+    <label>Beat frequency <span class="val" id="beatVal">10.0 Hz</span></label>
+    <input type="range" id="beatSlider" min="0.5" max="40" step="0.1" value="10">
+    <div class="ear-tags">
+      <span>Delta / Theta</span><span>Alpha</span><span>Beta / Gamma</span>
+    </div>
+  </div>
+
+  <div class="control">
+    <label>Beat volume <span class="val" id="volVal">40%</span></label>
+    <input type="range" id="volSlider" min="0" max="100" step="1" value="40">
+  </div>
+
+  <div class="control">
+    <label>Brown noise <span class="val" id="noiseVal">0%</span></label>
+    <input type="range" id="noiseSlider" min="0" max="100" step="1" value="0">
+  </div>
+
+  <button id="toggle">Play</button>
+
+  <div class="warning">
+    Left ear: base frequency. Right ear: base + beat.<br>
+    Do not use while driving. Avoid if you have epilepsy.
+  </div>
+</div>
+
+<script>
+let ctx = null;
+let leftOsc, rightOsc, gainNode, merger;
+let noiseSource, noiseGain;
+let playing = false;
+
+const baseSlider = document.getElementById('baseSlider');
+const beatSlider = document.getElementById('beatSlider');
+const volSlider = document.getElementById('volSlider');
+const noiseSlider = document.getElementById('noiseSlider');
+const baseVal = document.getElementById('baseVal');
+const beatVal = document.getElementById('beatVal');
+const volVal = document.getElementById('volVal');
+const noiseVal = document.getElementById('noiseVal');
+const toggleBtn = document.getElementById('toggle');
+
+function updateLabels() {
+  baseVal.textContent = `${baseSlider.value} Hz`;
+  beatVal.textContent = `${parseFloat(beatSlider.value).toFixed(1)} Hz`;
+  volVal.textContent = `${volSlider.value}%`;
+  noiseVal.textContent = `${noiseSlider.value}%`;
+}
+updateLabels();
+
+// Generate a loopable buffer of brown noise (random walk, leaky-integrated
+// so it doesn't drift into silence or clipping, normalized afterward).
+function makeBrownNoiseBuffer(audioCtx, seconds = 4) {
+  const sampleRate = audioCtx.sampleRate;
+  const length = sampleRate * seconds;
+  const buffer = audioCtx.createBuffer(2, length, sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const data = buffer.getChannelData(ch);
+    let last = 0;
+    let max = 0;
+    for (let i = 0; i < length; i++) {
+      const white = Math.random() * 2 - 1;
+      last = (last + 0.02 * white) / 1.02;
+      data[i] = last;
+      if (Math.abs(last) > max) max = Math.abs(last);
+    }
+    // normalize so peaks land near +/-1 before gain is applied
+    const scale = max > 0 ? 0.9 / max : 1;
+    for (let i = 0; i < length; i++) data[i] *= scale;
+  }
+  return buffer;
+}
+
+function start() {
+  ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+  const base = parseFloat(baseSlider.value);
+  const beat = parseFloat(beatSlider.value);
+  const vol = parseFloat(volSlider.value) / 100;
+
+  leftOsc = ctx.createOscillator();
+  rightOsc = ctx.createOscillator();
+  leftOsc.type = 'sine';
+  rightOsc.type = 'sine';
+  leftOsc.frequency.value = base;
+  rightOsc.frequency.value = base + beat;
+
+  const leftPan = ctx.createStereoPanner();
+  const rightPan = ctx.createStereoPanner();
+  leftPan.pan.value = -1;
+  rightPan.pan.value = 1;
+
+  gainNode = ctx.createGain();
+  gainNode.gain.value = vol;
+
+  leftOsc.connect(leftPan).connect(gainNode);
+  rightOsc.connect(rightPan).connect(gainNode);
+  gainNode.connect(ctx.destination);
+
+  leftOsc.start();
+  rightOsc.start();
+
+  // Brown noise layer, mixed in independently of the beat gain
+  noiseSource = ctx.createBufferSource();
+  noiseSource.buffer = makeBrownNoiseBuffer(ctx);
+  noiseSource.loop = true;
+  noiseGain = ctx.createGain();
+  noiseGain.gain.value = parseFloat(noiseSlider.value) / 100;
+  noiseSource.connect(noiseGain).connect(ctx.destination);
+  noiseSource.start();
+
+  playing = true;
+  toggleBtn.textContent = 'Stop';
+  toggleBtn.classList.add('playing');
+}
+
+function stop() {
+  if (leftOsc) leftOsc.stop();
+  if (rightOsc) rightOsc.stop();
+  if (noiseSource) noiseSource.stop();
+  if (ctx) ctx.close();
+  ctx = null;
+  playing = false;
+  toggleBtn.textContent = 'Play';
+  toggleBtn.classList.remove('playing');
+}
+
+toggleBtn.addEventListener('click', () => {
+  if (playing) stop(); else start();
+});
+
+baseSlider.addEventListener('input', () => {
+  updateLabels();
+  if (playing && leftOsc && rightOsc) {
+    const base = parseFloat(baseSlider.value);
+    const beat = parseFloat(beatSlider.value);
+    leftOsc.frequency.setTargetAtTime(base, ctx.currentTime, 0.05);
+    rightOsc.frequency.setTargetAtTime(base + beat, ctx.currentTime, 0.05);
+  }
+});
+
+beatSlider.addEventListener('input', () => {
+  updateLabels();
+  if (playing && rightOsc) {
+    const base = parseFloat(baseSlider.value);
+    const beat = parseFloat(beatSlider.value);
+    rightOsc.frequency.setTargetAtTime(base + beat, ctx.currentTime, 0.05);
+  }
+});
+
+volSlider.addEventListener('input', () => {
+  updateLabels();
+  if (playing && gainNode) {
+    gainNode.gain.setTargetAtTime(parseFloat(volSlider.value) / 100, ctx.currentTime, 0.05);
+  }
+});
+
+noiseSlider.addEventListener('input', () => {
+  updateLabels();
+  if (playing && noiseGain) {
+    noiseGain.gain.setTargetAtTime(parseFloat(noiseSlider.value) / 100, ctx.currentTime, 0.05);
+  }
+});
+</script>
+
+</body>
+</html>
