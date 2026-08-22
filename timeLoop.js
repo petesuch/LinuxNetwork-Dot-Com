@@ -1,105 +1,67 @@
-let tzMap = {
-  "JFK": "America/New_York",
-  "PHX": "America/Phoenix",
-  "PNH": "Asia/Phnom_Penh",
-  "LAX": "America/Los_Angeles",
-  "DEN": "America/Denver",
-  "NRT": "Asia/Tokyo",
-  "MEL": "Australia/Melbourne",
-  "ORD": "America/Chicago",
-  "FRA": "Europe/Berlin",
-  "AKL": "Pacific/Auckland",
-  "AMS": "Europe/Amsterdam",
-  "LHR": "Europe/London",
-  "PER": "Australia/Perth",
-  "PVG": "Asia/Shanghai",
-  "HKT": "Asia/Hong_Kong",
-  "TLV": "Asia/Tel_Aviv",
-  "MAA": "Asia/Kolkata",
-  "GRU": "America/Sao_Paulo",
-  "DME": "Europe/Moscow",
-  "HNL": "Pacific/Honolulu",
-  "ICN": "Asia/Seoul",
-};
+c// timezoneTable.js
 
-anyNumberSuffix = function (n) {
-  if (typeof (n) === 'string') {
-    n = Number(n);
-  }
-  let suffix = '';
-  let num = '';
-  let secondtoLast = '';
-  let lastDigit = '';
-  let last2Digits = '';
+function timedMsg() {
+    var t=setInterval("change_time();", 1000);
+}
 
-  if (n > 9) {
-    num = n;
-    last2Digits = num.toString().match(/(?<secondtoLastDigit>\d)(?<lastDigit>\d\b)/);
-    secondtoLast = last2Digits.groups.secondtoLastDigit;
-    lastDigit = last2Digits.groups.lastDigit;
-  }
-  if (n <= 9) {
-    num = n;
-    lastDigit = String(num);
-  }
-  if (secondtoLast == '1') {
-    suffix = 'th';
-  }
-  else {
-    switch (lastDigit) {
-      case undefined:
-        suffix = '';
-        break;
-      case '1':
-        suffix = 'st';
-        break;
-      case '2':
-        suffix = 'nd';
-        break;
-      case '3':
-        suffix = 'rd';
-        break;
-      default:
-        suffix = 'th';
-        break
-    }
-  }
-  return num + suffix + ', ';
-};
+function change_time() {
+    var d1 = new Date().toLocaleString("en-US", {timeZone: "America/Phoenix"})
+    var d2 = new Date().toLocaleString("en-US", {timeZone: "America/New_York"})
+    var d3 = new Date().toLocaleString("en-US", {timeZone: "Asia/Phnom_Penh"}) // Phnom Penh now served by Techo Int'l Airport (KTI)
+    var d4 = new Date().toLocaleString("en-US", {timeZone: "America/Los_Angeles"})
+
+    var d5 = new Date().toLocaleString("en-US", {timeZone: "America/Denver"})
+    var d6 = new Date().toLocaleString("en-US", {timeZone: "Asia/Tokyo"})
+    var d7 = new Date().toLocaleString("en-US", {timeZone: "Australia/Melbourne"})
+    var d8 = new Date().toLocaleString("en-US", {timeZone: "America/Chicago"})
+
+    var d9  = new Date().toLocaleString("en-US", {timeZone: "Europe/Berlin"})
+    var d10 = new Date().toLocaleString("en-US", {timeZone: "Pacific/Auckland"})
+    var d11 = new Date().toLocaleString("en-US", {timeZone: "Europe/Amsterdam"})
+    var d12 = new Date().toLocaleString("en-US", {timeZone: "Europe/London"})
+
+    var d13 = new Date().toLocaleString("en-US", {timeZone: "Australia/Perth"})
+    var d14 = new Date().toLocaleString("en-US", {timeZone: "Asia/Shanghai"})
+    var d15 = new Date().toLocaleString("en-US", {timeZone: "Asia/Hong_Kong"})
+    var d16 = new Date().toLocaleString("en-US", {timeZone: "Asia/Tel_Aviv"})
+
+    var d13 = new Date().toLocaleString("en-US", {timeZone: "Australia/Perth"})
+    var d14 = new Date().toLocaleString("en-US", {timeZone: "Asia/Shanghai"})
+    var d15 = new Date().toLocaleString("en-US", {timeZone: "Asia/Hong_Kong"})
+    var d16 = new Date().toLocaleString("en-US", {timeZone: "Asia/Tel_Aviv"})
+
+    var d17 = new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"})
+    var d18 = new Date().toLocaleString("en-US", {timeZone: "America/Sao_Paulo"})
+    var d19 = new Date().toLocaleString("en-US", {timeZone: "Europe/Moscow"})
+    var d20 = new Date().toLocaleString("en-US", {timeZone: "Pacific/Honolulu"})
 
 
-//  Map of options that include timeZone and a 12 hour clock
-mkLongOptions = function (tz = string, hr12 = boolean) {
-  let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
-  options.timeZone = tz;
-  options.hours12 = hr12;
-  return options;
-};
+    document.getElementById("phx_time").innerHTML = '<a href="https://www.timeanddate.com/weather/usa/phoenix/ext" target="_blank">Tucson: ' +d1+ '</a>';
+    document.getElementById("jfk_time").innerHTML = "New York: " + d2;
+    document.getElementById("kti_time").innerHTML = "Phnom Penh (KTI): "+ d3;
+    document.getElementById("lax_time").innerHTML = "San Francisco: "+ d4;
 
+    document.getElementById("den_time").innerHTML = "Boulder: " +d5;
+    document.getElementById("nrt_time").innerHTML = "Tokyo: " + d6;
+    document.getElementById("mel_time").innerHTML = "Melbourne: "+ d7;
+    document.getElementById("ord_time").innerHTML = "Chicago: "+ d8;
 
-//  A function to keep the seconds and minutes up and running
-function clockIsTicking() {
-  let ticktok = setInterval("getFullDateAndTime();", 1000); // every second
-};
+    document.getElementById("fra_time").innerHTML = "Frankfurt: "+ d9;
+    document.getElementById("akl_time").innerHTML = "Auckland: " + d10;
+    document.getElementById("ams_time").innerHTML = "Amsterdam: "+ d11;
+    document.getElementById("lhr_time").innerHTML = "London: "+ d12;
 
+    document.getElementById("per_time").innerHTML = "Perth: "+ d13;
+    document.getElementById("pvg_time").innerHTML = "Shanghai: " + d14;
+    document.getElementById("hkt_time").innerHTML = "Hong Kong: "+ d15;
+    document.getElementById("tlv_time").innerHTML = "Tel Aviv: "+ d16;
 
-//  Gets date/time, applies timezone and finally exports to DOM
-function getFullDateAndTime() {
-  const regex = new RegExp('\\b(?<grpDay>\\d+),\\ ', 's');
-  //const regex = /\b(?<grpDay>\d+)\ /s);
-  let dnow = new Date();
-  for (airportCode in tzMap) {
-    intlDateTimeFormat = new Intl.DateTimeFormat('en-US', mkLongOptions(tzMap[airportCode], true));
-    let idtf = intlDateTimeFormat.format(dnow); // Apply formatting options
-    let idtf_str = String(idtf);  // turn the International Date Time into string
-    let grpDay = idtf_str.match(regex);
-    idtf_str = idtf_str.replace(regex, anyNumberSuffix(grpDay[1])); // turn 18 into 18th, etc
-    //console.log("last idtf_str:", idtf_str);
-    document.getElementById(airportCode).innerHTML = airportCode + ":  " + idtf_str;
-  }
-};
+    document.getElementById("maa_time").innerHTML = "Chennai: "+ d17;
+    document.getElementById("gru_time").innerHTML = "Sao Paulo: " + d18;
+    document.getElementById("dme_time").innerHTML = "Moscow:  "+ d19;
+    document.getElementById("hnl_time").innerHTML = "Honolulu: "+ d20;
+}
 
-//  It takes a licking but keeps on ticking
-clockIsTicking();
+timedMsg();
 
 // End of File
