@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Two-Source Wave Interference</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: sans-serif;
+      color: white;
+    }
+    #waveCanvas {
+      display: block;
+      background: #000;
+    }
+    #title {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      font-weight: bold;
+      background: rgba(0,0,0,0.4);
+      padding: 6px 12px;
+      border-radius: 6px;
+    }
+    #controls {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(0,0,0,0.4);
+      padding: 8px 14px;
+      border-radius: 8px;
+    }
+    button {
+      padding: 8px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      background: #3a4a63;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #4a5d7a;
+    }
+    #info {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 14px;
+      color: #b8c4d4;
+      background: rgba(0,0,0,0.4);
+      padding: 8px 14px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="title">Two-Source Wave Interference — Ripple Tank</div>
+
+  <canvas id="waveCanvas"></canvas>
+
+  <div id="controls">
+    <button id="playPause" type="button">⏸ Pause</button>
+    <label for="freqSlider">Bobbing frequency: <span id="freqValue">3.0</span> Hz</label>
+    <input id="freqSlider" type="range" min="0.2" max="6" step="0.1" value="3" />
+  </div>
+
+  <div id="info">
+    Frequency: <span id="freqInfo">3</span> Hz &nbsp;|&nbsp; Wave speed: 12.5 cm/s (shallow water) &nbsp;|&nbsp;
+    Wavelength: <span id="wavelengthInfo">~4.2</span> cm &nbsp;|&nbsp; Source separation: 30 cm
+  </div>
+
+  <script>
+    // ---- Physical parameters ----
+    let FREQ_HZ = 3;               // bobbing frequency of each source (adjustable via slider)
+    const WAVE_SPEED_CM_S = 12.5;  // shallow-water wave speed approximation (halved)
+    const SEPARATION_CM = 30;      // distance between the two sources (widened further for more fringes)
+
+    // ---- Grid (computation) resolution ----
+    const PX_PER_CM = 4;          // grid pixels per cm
+    const DOMAIN_W_CM = 50;
+    const DOMAIN_H_CM = 30;
+    const GRID_W = DOMAIN_W_CM * PX_PER_CM;  // 200
+    const GRID_H = DOMAIN_H_CM * PX_PER_CM;  // 120
+
+    const gridCanvas = document.createElement("canvas");
+    gridCanvas.width = GRID_W;
+    gridCanvas.height = GRID_H;
+    const gridCtx = gridCanvas.getContext("2d");
+    const imageData = gridCtx.createImageData(GRID_W, GRID_H);
+
+    const displayCanvas = document.getElementById("waveCanvas");
+    const displayCtx = displayCanvas.getContext("2d");
+    displayCtx.imageSmoothingEnabled = true;
+
+    function resizeCanvas() {
+      displayCanvas.width = window.innerWidth;
+      displayCanvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    // ---- Source positions (grid coordinates) ----
+    const centerX = GRID_W / 2;
+    const bottomMarginCm = 3; // keep sources a few cm above the very bottom edge
+    const sourceY = GRID_H - bottomMarginCm * PX_PER_CM;
+    const halfSep = (SEPARATION_CM * PX_PER_CM) / 2;
+    const source1 = { x: centerX - halfSep, y: sourceY };
+    const source2 = { x: centerX + halfSep, y: sourceY };
+
+    // ---- Precompute distance, decay, and delay for every grid cell ----
+    const cellCount = GRID_W * GRID_H;
+    const r1arr = new Float32Array(cellCount);
+    const r2arr = new Float32Array(cellCount);
+    const decay1 = new Float32Array(cellCount);
+    const decay2 = new Float32Array(cellCount);
+    const delay1 = new Float32Array(cellCount);
+    const delay2 = new Float32Array(cellCount);
+
+    for (let j = 0; j < GRID_H; j++) {
+      for (let i = 0; i < GRID_W; i++) {
+        const idx = j * GRID_W + i;
+        const dx1 = (i - source1.x) / PX_PER_CM;
+        const dy1 = (j - source1.y) / PX_PER_CM;
+        const dx2 = (i - source2.x) / PX_PER_CM;
+        const dy2 = (j - source2.y) / PX_PER_CM;
+        const r1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+        const r2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+        r1arr[idx] = r1;
+        r2arr[idx] = r2;
+        // cylindrical spreading: amplitude falls off ~ 1/sqrt(r)
+        decay1[idx] = 1 / Math.sqrt(r1 + 1);
+        decay2[idx] = 1 / Math.sqrt(r2 + 1);
+        delay1[idx] = r1 / WAVE_SPEED_CM_S;
+        delay2[idx] = r2 / WAVE_SPEED_CM_S;
+      }
+    }
+
+    // ---- Color mapping: black at rest, red for crests, blue for troughs ----
+    function renderFrame(t) {
+      const data = imageData.data;
+      const twoPiF = 2 * Math.PI * FREQ_HZ;
+
+      for (let idx = 0; idx < cellCount; idx++) {
+        let value = 0;
+        if (t >= delay1[idx]) {
+          value += decay1[idx] * Math.sin(twoPiF * (t - delay1[idx]));
+        }
+        if (t >= delay2[idx]) {
+          value += decay2[idx] * Math.sin(twoPiF * (t - delay2[idx]));
+        }
+        // normalize roughly to [-1, 1], boost contrast, then clamp
+        const CONTRAST = 1.4;
+        let norm = (value / 1.3) * CONTRAST;
+        if (norm > 1) norm = 1;
+        if (norm < -1) norm = -1;
+
+        const p = idx * 4;
+        if (norm >= 0) {
+          data[p] = norm * 255;      // red channel = crest strength
+          data[p + 1] = 0;
+          data[p + 2] = 0;
+        } else {
+          data[p] = 0;
+          data[p + 1] = 0;
+          data[p + 2] = -norm * 255; // blue channel = trough strength
+        }
+        data[p + 3] = 255;
+      }
+
+      gridCtx.putImageData(imageData, 0, 0);
+      displayCtx.drawImage(gridCanvas, 0, 0, GRID_W, GRID_H, 0, 0, displayCanvas.width, displayCanvas.height);
+
+      // ---- Draw the two bobbing source balls on top ----
+      const scaleX = displayCanvas.width / GRID_W;
+      const scaleY = displayCanvas.height / GRID_H;
+      const bobAmplitudePx = 10;
+      const bobOffset = bobAmplitudePx * Math.sin(twoPiF * t);
+
+      drawBall(source1.x * scaleX, source1.y * scaleY + bobOffset, "#e53935", "#ff8a80");
+      drawBall(source2.x * scaleX, source2.y * scaleY + bobOffset, "#2979ff", "#82b1ff");
+    }
+
+    function drawBall(x, y, fillColor, strokeColor) {
+      displayCtx.beginPath();
+      displayCtx.arc(x, y, 9, 0, 2 * Math.PI);
+      displayCtx.fillStyle = fillColor;
+      displayCtx.strokeStyle = strokeColor;
+      displayCtx.lineWidth = 2;
+      displayCtx.fill();
+      displayCtx.stroke();
+    }
+
+    // ---- Animation loop with pause support ----
+    let isPlaying = true;
+    let startTime = performance.now();
+    let elapsedAtPause = 0;
+
+    function tick(now) {
+      if (isPlaying) {
+        const t = (now - startTime) / 1000 + elapsedAtPause;
+        renderFrame(t);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    const playPauseButton = document.getElementById("playPause");
+    playPauseButton.addEventListener("click", function () {
+      if (isPlaying) {
+        elapsedAtPause += (performance.now() - startTime) / 1000;
+        isPlaying = false;
+        playPauseButton.textContent = "▶ Play";
+      } else {
+        startTime = performance.now();
+        isPlaying = true;
+        playPauseButton.textContent = "⏸ Pause";
+      }
+    });
+
+    const freqSlider = document.getElementById("freqSlider");
+    const freqValueLabel = document.getElementById("freqValue");
+    const freqInfoLabel = document.getElementById("freqInfo");
+    const wavelengthInfoLabel = document.getElementById("wavelengthInfo");
+
+    freqSlider.addEventListener("input", function () {
+      // preserve continuous phase across the frequency change
+      const now = performance.now();
+      const currentT = isPlaying ? (now - startTime) / 1000 + elapsedAtPause : elapsedAtPause;
+      elapsedAtPause = currentT;
+      startTime = now;
+
+      FREQ_HZ = parseFloat(freqSlider.value);
+      const wavelength = WAVE_SPEED_CM_S / FREQ_HZ;
+
+      freqValueLabel.textContent = FREQ_HZ.toFixed(1);
+      freqInfoLabel.textContent = FREQ_HZ.toFixed(1);
+      wavelengthInfoLabel.textContent = wavelength.toFixed(1);
+    });
+
+    requestAnimationFrame(tick);
+  </script>
+
+</body>
+
+</html>
