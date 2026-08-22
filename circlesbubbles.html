@@ -4,10 +4,10 @@
 *    "Circles and Bubbles"
 *   Uses SVG and Javascript to create expanding circles on mouseclicks.
 *   Random colors, random durations and random sizes are used to create the
-*   circles.
+*   circles. This version has no random movement or changing colors.
 *
 *   @author: Peter Suchsland
-*   @date: October 28th, 2020 updated August 2026  
+*   @date: October 28th, 2020
 *
 -->
 
@@ -17,8 +17,13 @@
 </head>
 
 <body>
-  <b>Click Anywhere!!!</b>
+  <b>Click Anywhere!!!</b> <button id="rainToggle" type="button">🔇 Rain sound: off</button>
   <svg id="mySVG" width="100%" height="100%" style="background-color: darkslategray" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" />
+
+  <div style="position: fixed; bottom: 10px; left: 10px; color: white; font-family: sans-serif; background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 6px;">
+    Translucency:
+    <input id="opacitySlider" type="range" min="0.05" max="1" step="0.05" value="0.4" />
+  </div>
 
   <script type="text/javascript">
     startAtMousePos = function(event) {
@@ -58,11 +63,14 @@
     createCircle = function(cx, cy) {
       let myCircle = document.createElementNS(svgNS, "circle");
       myCircle.setAttributeNS(null, "id", "mycircle");
+      myCircle.setAttributeNS(null, "class", "bubble");
       myCircle.setAttributeNS(null, "cx", cx);
       myCircle.setAttributeNS(null, "cy", cy);
       myCircle.setAttributeNS(null, "r", 1);
       myCircle.setAttributeNS(null, "fill", randomColor());
+      myCircle.setAttributeNS(null, "fill-opacity", bubbleOpacity);
       myCircle.setAttributeNS(null, "stroke", "yellow");
+      myCircle.setAttributeNS(null, "stroke-opacity", bubbleOpacity);
       myCircle.setAttributeNS(null, "stroke-width", "3px");
       // animation
       let animateX = document.createElementNS(svgNS, "animate");
@@ -78,6 +86,118 @@
 
     let svgNS = "http://www.w3.org/2000/svg";
     document.addEventListener("click", startAtMousePos);
+
+    // ---- Rain sound toggle (synthesized with Web Audio API, no audio file needed) ----
+    let audioCtx = null;
+    let rainNodes = null;
+    let isRainPlaying = false;
+
+    function buildNoiseBuffer(ctx, seconds) {
+      const bufferSize = ctx.sampleRate * seconds;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      return buffer;
+    }
+
+    function startRainSound() {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+
+      const noiseBuffer = buildNoiseBuffer(audioCtx, 4);
+      const noiseSource = audioCtx.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+      noiseSource.loop = true;
+
+      const bandpass = audioCtx.createBiquadFilter();
+      bandpass.type = "bandpass";
+      bandpass.frequency.value = 3000;
+      bandpass.Q.value = 0.6;
+
+      const bedGain = audioCtx.createGain();
+      bedGain.gain.value = 0.12;
+
+      noiseSource.connect(bandpass).connect(bedGain).connect(audioCtx.destination);
+      noiseSource.start();
+
+      const dropletTimeouts = [];
+      function scheduleDroplet() {
+        const delay = 40 + Math.random() * 160;
+        const timeoutId = setTimeout(function () {
+          playDroplet();
+          scheduleDroplet();
+        }, delay);
+        dropletTimeouts.push(timeoutId);
+      }
+
+      function playDroplet() {
+        const now = audioCtx.currentTime;
+        const dropBuffer = buildNoiseBuffer(audioCtx, 0.05);
+        const dropSource = audioCtx.createBufferSource();
+        dropSource.buffer = dropBuffer;
+
+        const dropFilter = audioCtx.createBiquadFilter();
+        dropFilter.type = "highpass";
+        dropFilter.frequency.value = 2000 + Math.random() * 4000;
+
+        const dropGain = audioCtx.createGain();
+        const peak = 0.05 + Math.random() * 0.1;
+        dropGain.gain.setValueAtTime(0, now);
+        dropGain.gain.linearRampToValueAtTime(peak, now + 0.002);
+        dropGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+
+        dropSource.connect(dropFilter).connect(dropGain).connect(audioCtx.destination);
+        dropSource.start(now);
+        dropSource.stop(now + 0.06);
+      }
+
+      scheduleDroplet();
+
+      rainNodes = { noiseSource, dropletTimeouts };
+      isRainPlaying = true;
+    }
+
+    function stopRainSound() {
+      if (!rainNodes) return;
+      rainNodes.dropletTimeouts.forEach(clearTimeout);
+      try {
+        rainNodes.noiseSource.stop();
+      } catch (e) {
+        // already stopped, ignore
+      }
+      rainNodes = null;
+      isRainPlaying = false;
+    }
+
+    const rainToggleButton = document.getElementById("rainToggle");
+    rainToggleButton.addEventListener("click", function (evt) {
+      evt.stopPropagation(); // don't let this click also spawn a bubble
+      if (audioCtx && audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+      if (isRainPlaying) {
+        stopRainSound();
+        rainToggleButton.textContent = "🔇 Rain sound: off";
+      } else {
+        startRainSound();
+        rainToggleButton.textContent = "🔊 Rain sound: on";
+      }
+    });
+
+    // ---- Translucency slider ----
+    let bubbleOpacity = 0.4; // default fill/stroke opacity for new bubbles
+
+    const opacitySlider = document.getElementById("opacitySlider");
+    opacitySlider.addEventListener("input", function (evt) {
+      evt.stopPropagation(); // don't let this also spawn a bubble
+      bubbleOpacity = parseFloat(opacitySlider.value);
+      // live-update every bubble currently on screen too
+      document.querySelectorAll(".bubble").forEach(function (circle) {
+        circle.setAttributeNS(null, "fill-opacity", bubbleOpacity);
+        circle.setAttributeNS(null, "stroke-opacity", bubbleOpacity);
+      });
+    });
   </script>
 </body>
 
