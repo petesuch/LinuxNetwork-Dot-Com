@@ -7,7 +7,7 @@ function timedMsg() {
 function change_time() {
     var d1 = new Date().toLocaleString("en-US", {timeZone: "America/Phoenix"})
     var d2 = new Date().toLocaleString("en-US", {timeZone: "America/New_York"})
-    var d3 = new Date().toLocaleString("en-US", {timeZone: "Asia/Phnom_Penh"})
+    var d3 = new Date().toLocaleString("en-US", {timeZone: "Asia/Phnom_Penh"}) // Phnom Penh now served by Techo Int'l Airport (KTI)
     var d4 = new Date().toLocaleString("en-US", {timeZone: "America/Los_Angeles"})
 
     var d5 = new Date().toLocaleString("en-US", {timeZone: "America/Denver"})
@@ -38,7 +38,7 @@ function change_time() {
 
     document.getElementById("phx_time").innerHTML = '<a href="https://www.timeanddate.com/weather/usa/phoenix/ext" target="_blank">Tucson: ' +d1+ '</a>';
     document.getElementById("jfk_time").innerHTML = "New York: " + d2;
-    document.getElementById("pnh_time").innerHTML = "Phnom Penh: "+ d3;
+    document.getElementById("kti_time").innerHTML = "Phnom Penh (KTI): "+ d3;
     document.getElementById("lax_time").innerHTML = "San Francisco: "+ d4;
 
     document.getElementById("den_time").innerHTML = "Boulder: " +d5;
