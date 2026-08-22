@@ -11,10 +11,14 @@
 				border: 5px solid #E6C420;
 				text-align: center;
 				font-family: noto mono;
-				font-size: 26px;
+				font-size: 22px;
+				word-wrap: break-word;
+				overflow-wrap: break-word;
 			}
 			table {
 				background: #B90000;
+				table-layout: fixed;
+				width: 100%;
 			}
 		</style>
 
@@ -23,22 +27,15 @@
 		<script src="timeLoop.js"></script>
 
 		<h1>The International Time Zone Clock Page</h1>
-		<p>This page was edited mostly with vim, using nodejs to troubleshoot on an
-		Arch based Linux i3wm laptop. While not directly related to linux, this page
-		showcases the power of Javascript and open source software.  If you travel
-		a lot I hope you find this page beneficial...  As Javascript and Browsers
-		aka (software) are in a constant state of flux, this page has occasionally
-		stopped behaving as I intended.  If the Date suffix (ie 22nd, or 3rd) is in
-		the wrong position, please feel free to contact me what browser you were using.
-		Contact details at https://github.com/petesuch.
+		<p>If you travel, I hope you find this page beneficial.
 		</p>
 
 		<table style="width:100%;">
-			<caption style="background-color:#F6EBDF; font-size:210%;font-family:luxi">International Time Zone Clocks:</caption>
+			<caption style="background-color:#F6EBDF; font-size:210%;font-family:luxi">International Time Zone Clock:</caption>
 			<tr>
 				<td id="JFK"></td>
 				<td id="ORD"></td>
-				<td id="LAX"></td>
+				<td id="SFO"></td>
 			</tr>
 			<tr>
 				<td id="PHX"></td>
@@ -46,7 +43,7 @@
 				<td id="NRT"></td>
 			</tr>
 			<tr>
-				<td id="PNH"></td>
+				<td id="KTI"></td>
 				<td id="MEL"></td>
 				<td id="FRA"></td>
 			</tr>
@@ -61,7 +58,7 @@
 				<td id="HKT"></td>
 			</tr>
 			<tr>
-				<td id="TLV"></td>
+				<td id="IKA"></td>
 				<td id="MAA"></td>
 				<td id="GRU"></td>
 			</tr>
