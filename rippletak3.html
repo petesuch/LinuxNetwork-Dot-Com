@@ -10,13 +10,13 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: #000;
+      background: #87ceeb;
       font-family: sans-serif;
-      color: white;
+      color: #1a2a33;
     }
     #waveCanvas {
       display: block;
-      background: #000;
+      background: #87ceeb;
     }
     #title {
       position: fixed;
@@ -24,6 +24,7 @@
       left: 10px;
       font-weight: bold;
       background: rgba(0,0,0,0.4);
+      color: white;
       padding: 6px 12px;
       border-radius: 6px;
     }
@@ -35,6 +36,7 @@
       align-items: center;
       gap: 16px;
       background: rgba(0,0,0,0.4);
+      color: white;
       padding: 8px 14px;
       border-radius: 8px;
     }
@@ -56,7 +58,7 @@
       bottom: 10px;
       right: 10px;
       font-size: 14px;
-      color: #b8c4d4;
+      color: #cfe6f5;
       background: rgba(0,0,0,0.4);
       padding: 8px 14px;
       border-radius: 8px;
@@ -147,7 +149,11 @@
       }
     }
 
-    // ---- Color mapping: black at rest, red for crests, blue for troughs ----
+    // ---- Color mapping: scarlet troughs -> dark earthy brown at rest -> gold crests ----
+    const SCARLET = [140, 20, 10];
+    const EARTH_BROWN = [135, 206, 235]; // now "sky blue" rest color
+    const GOLD = [255, 225, 0];          // now bright yellow crests
+
     function renderFrame(t) {
       const data = imageData.data;
       const twoPiF = 2 * Math.PI * FREQ_HZ;
@@ -166,16 +172,22 @@
         if (norm > 1) norm = 1;
         if (norm < -1) norm = -1;
 
-        const p = idx * 4;
+        let r, g, b;
         if (norm >= 0) {
-          data[p] = norm * 255;      // red channel = crest strength
-          data[p + 1] = 0;
-          data[p + 2] = 0;
+          r = EARTH_BROWN[0] + (GOLD[0] - EARTH_BROWN[0]) * norm;
+          g = EARTH_BROWN[1] + (GOLD[1] - EARTH_BROWN[1]) * norm;
+          b = EARTH_BROWN[2] + (GOLD[2] - EARTH_BROWN[2]) * norm;
         } else {
-          data[p] = 0;
-          data[p + 1] = 0;
-          data[p + 2] = -norm * 255; // blue channel = trough strength
+          const m = -norm;
+          r = EARTH_BROWN[0] + (SCARLET[0] - EARTH_BROWN[0]) * m;
+          g = EARTH_BROWN[1] + (SCARLET[1] - EARTH_BROWN[1]) * m;
+          b = EARTH_BROWN[2] + (SCARLET[2] - EARTH_BROWN[2]) * m;
         }
+
+        const p = idx * 4;
+        data[p] = r;
+        data[p + 1] = g;
+        data[p + 2] = b;
         data[p + 3] = 255;
       }
 
@@ -188,8 +200,8 @@
       const bobAmplitudePx = 10;
       const bobOffset = bobAmplitudePx * Math.sin(twoPiF * t);
 
-      drawBall(source1.x * scaleX, source1.y * scaleY + bobOffset, "#e53935", "#ff8a80");
-      drawBall(source2.x * scaleX, source2.y * scaleY + bobOffset, "#2979ff", "#82b1ff");
+      drawBall(source1.x * scaleX, source1.y * scaleY + bobOffset, "#8c140a", "#ffb347");
+      drawBall(source2.x * scaleX, source2.y * scaleY + bobOffset, "#e6aa1e", "#ffe08a");
     }
 
     function drawBall(x, y, fillColor, strokeColor) {
